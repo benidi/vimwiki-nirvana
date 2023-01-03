@@ -1,0 +1,60 @@
+################################################################################
+################################ Tests for WSL #################################
+################################################################################
+Before (set globals: handler config):
+  let g:twvim_handlers = {
+        \ 'qnr': {'prefix': 'smb://uh01500696.bmwgroup.net/home\$', 'replacement': '/Volumes/xxx', 'executable': 'explorer.exe'},
+        \ 'twschema': {'prefix': 'smb://yyy', 'replacement': '/Volumes/yyy'},
+  \ }
+  for v in keys(g:twvim_handlers)
+   echom"Defined handlers: " . v
+  endfor
+
+  "Set Linux WLS environment
+  let g:os = 'Linux'
+  let g:twvim_debug = 1
+  let g:twvim_wsl = 1
+  let g:twvim_mock = 1  "1: avoid execution of handler
+  source ~/.vim/bundle/vimwiki-nirvana/plugin/functions_linux.vim
+
+"Execute (TwWslHandler: file:D:\Users\Thomas\OneDrive\My Documents\vimwiki\xxx.docx):
+  "let g:twvim_mock = 0  "1: avoid execution of handler
+  "let file = 'file:D:\Users\Thomas\OneDrive\My Documents\vimwiki\xxx.docx'
+  "Log printf("mock: %s, file: %s", g:twvim_mock, file)
+  "Assert TwWslHandler(file), "Invalid drive"
+
+"Execute (TwWslHandler: Windows Redirect to D: c:\):
+  "let file = 'file:c:\Users\Thomas\OneDrive\My Documents\vimwiki\xxx.docx'
+  "Log printf("mock: %s, file: %s", g:twvim_mock, file)
+  "Assert TwWslHandler(file), "Invalid drive"
+
+"Execute (TwWslHandler: file:/mnt/d/Users/Thomas/OneDrive/My Documents/vimwiki/xxx.docx):
+  "let g:twvim_mock = 0  "1: avoid execution of handler
+  "let file = 'file:/mnt/d/Users/Thomas/OneDrive/My Documents/vimwiki/xxx.docx'
+  "Assert TwWslHandler(file), "Invalid drive"
+
+"Execute (TwWslHandler: Windows Redirect to d: drive c):
+  "let file = 'file:/mnt/c/Users/Thomas/OneDrive/My Documents/vimwiki/xxx.docx'
+  "Log printf("mock: %s, file: %s", g:twvim_mock, file)
+  "Assert TwWslHandler(file), "Invalid drive"
+
+"Execute (TwWslHandler: invalid drive zz -> pass through):
+  "let file = 'file:/mnt/zz/Users/Thomas/OneDrive/My Documents/xxx.docx'
+  "Log printf("mock: %s, file: %s", g:twvim_mock, file)
+  "Assert ! TwWslHandler(file), "Valid drive, but expected invalid drive."
+
+"-------------------------------- HTTP handling ---------------------------------
+Execute (test TwWslHandler: https):
+  let g:twvim_mock = 0  "1: avoid execution of handler
+  let link = "https://learnvimscriptthehardway.stevelosh.com/chapters/01.html"
+  Log printf("mock: %s, file: %s", g:twvim_mock, link)
+  let retcode = TwWslHandler(link)
+  echom "retcode:" retcode
+  Assert retcode, "Expect 1, got ".retcode
+
+"Execute (test TwWslHandler: http):
+  "let link = "http://learnvimscriptthehardway.stevelosh.com/chapters/02.html"
+  "Log printf("mock: %s, file: %s", g:twvim_mock, link)
+  "let retcode = TwWslHandler(link)
+  "echom "retcode:" retcode
+  "Assert retcode, "Expect 1, got ".retcode

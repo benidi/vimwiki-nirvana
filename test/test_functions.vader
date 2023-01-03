@@ -1,0 +1,15 @@
+# Test my functions
+Before (Set globals):
+  let g:twvim_debug = 1
+  "let g:twvim_wsl = 1
+  let g:twvim_mock = 1  "1: avoid execution of handler
+
+"Execute (VimwikiLinkHandler: valid WSL ling):
+  "let file = 'file:/mnt/c/Users/Thomas/OneDrive/My Documents/xxx.docx'
+  "Log file
+  "Assert VimwikiLinkHandler(file), "Link is not valid"
+
+"Execute (VimwikiLinkHandler: valid HTTP ling):
+  "let file = 'win_d:/mnt/d/Users/Thomas/OneDrive/INVALID/xxx.docx'
+  "Log file
+  "Assert VimwikiLinkHandler(file) == 0, "Link is valid"
