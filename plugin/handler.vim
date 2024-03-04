@@ -66,7 +66,8 @@ function! TwHandler(link)  "{{{ do not use default handler like sdg-open, but sp
     if executable =~? 'source'
        "execute ("tabnew | term slides") 
        let filename = split(nlink, "/")[-1]
-       let file = split(filename, '\.')[0]
+       let file = join(split(filename, '\.')[0:-1],"-")
+       "let file = split(filename, '\.')[0]
        let windows = system("tmux list-windows | awk '{ print $2 }'")
        "call TwWarn(windows)
        "call TwWarn(windows =~ file)
@@ -77,7 +78,15 @@ function! TwHandler(link)  "{{{ do not use default handler like sdg-open, but sp
           call system('tmux new-window -n ' . file)
           "sleep 1000m
           let strPath = 'tmux send-keys -t "'. file . '" "vi "' . nlink . " Enter"
+          let strPath = 'tmux send-keys -t "'. file . '" "cd "' . nlink . " Enter"
           call system(strPath)
+          call system('tmux split-window -h -l 70  -c ' . nlink . ' bash')
+          call system('tmux split-window -v  -c '. nlink . ' bash')
+          let openCommand = 'tmux send-keys -t "'. file . '" "lazygit "' . " Enter"
+          call system(openCommand)
+          call system('tmux select-pane -t 0')
+          let openVimCommand = 'tmux send-keys -t "'. file . '" "vi  ./"' . " Enter"
+          call system(openVimCommand)
        endif
           return 1
     endif
